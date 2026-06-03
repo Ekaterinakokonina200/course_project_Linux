@@ -1,0 +1,40 @@
+- hosts: servers
+  become: yes
+
+  tasks:
+    - name: Установить Apache
+      dnf:
+        name: httpd
+        state: present
+
+    - name: Запустить Apache
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: Создать пользователя student
+      user:
+        name: student
+        state: present
+
+    - name: Создать каталог /data
+      file:
+        path: /data
+        state: directory
+        owner: student
+        group: student
+        mode: '0755'
+
+    - name: Создать файл info.txt
+      copy:
+        content: "Практическая работа\n"
+        dest: /data/info.txt
+        owner: student
+        group: student
+        mode: '0644'
+
+    - name: Скопировать index.html
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
